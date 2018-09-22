@@ -227,14 +227,22 @@ The second optional argument to the method is a BehaviourSubject that will be up
 ```
 //mCounter = 0 on init.
 
+final BehaviorSubject<Integer> allUpdatesStream = BehaviorSubject.create();
+
 final Single<Long> exampleStream = Single.defer(() ->
 	Single.just(mCounter++)
 )
 .delay(3, TimeUnit.SECONDS)
 .compose(Maintain.latest(
 	Maintain.Update.always(),
-	
+	exampleStreamSubject	
 ))
+
+allUpdatesStream.subscribe(v -> {
+	/* 
+	Called for every update that the update stream emits.
+	*/
+})
 
 ```
 
