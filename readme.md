@@ -4,6 +4,12 @@
 
 Maintain is a class that builds upon rx Single instances with the `.latest()` operator designed to store and update emitted data based on defined conditions.
 
+```
+final Single<EmissionType> myMaintainedSingle = 
+	updateDataSingle //<- A single that retrieves/updates data. 
+	.compose(Matintain.latest(Maintain.Update.expired(10, TimeUnit.MINUTES)));
+	
+```
 
 ## The `Maintain.latest()` operator:
 
@@ -15,7 +21,7 @@ Consider the following stream:
 final Single<Long> exampleStream = Single.defer(() ->
 	Single.just(mCounter++)
 )
-.delay(3, TimeUnit.SECONDS)
+.delay(3, TimeUnit.SECONDS);
 			
 ```
 
@@ -56,7 +62,7 @@ final Single<Long> exampleStream = Single.defer(() ->
 .compose(Maintain.latest())
 
 ``` 
-The work is only performed once, and all recieve a value of 0:
+The work is only performed once, and all receive a value of 0:
 
 ```
 exampleStream.subscribe(value -> {
@@ -138,7 +144,7 @@ An update function is the argument we supply to the `Maintain.latest(updateFunc)
 
 Your update functions must return a `Single<Boolean>`, and the value emitted from it determines whether or not the update is allowed to happen.
 
-###Maintain.Update:
+### Maintain.Update:
 
 Here is a list of the Update functions baked into Maintain:
 
