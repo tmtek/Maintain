@@ -1,7 +1,5 @@
 package com.tmtek.rx;
 
-import android.util.Log;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -219,12 +217,11 @@ public class Maintain {
 		return Observable.create(new ObservableOnSubscribe<T>() {
 
 			private BehaviorSubject<T> mSubject = subject;
-
-			private Disposable mSubjectStreamDisp = subject.doOnNext(v -> {
-				lastUpdateMillis = System.currentTimeMillis();
-			}).subscribe();
-
 			private long lastUpdateMillis = 0;
+
+			private final Disposable mSubjectStreamDisposable = subject.subscribe(v ->
+				lastUpdateMillis = System.currentTimeMillis()
+			);
 
 			@Override
 			public void subscribe(final ObservableEmitter<T> e) throws Exception {
@@ -237,11 +234,6 @@ public class Maintain {
 				final Disposable disposable = checkForUpdate
 					.flatMap(update -> update ?
 						withUpdateFor(mSubject, updateStream)
-						/*
-						TODO: subscribe to the subject to update this.
-						That will make it ok to update an external BehaviorSubject manually.
-						 */
-						.doOnSuccess(value -> lastUpdateMillis = System.currentTimeMillis())
 							:
 						withLatestFrom(mSubject, updateStream)
 					)
@@ -253,7 +245,6 @@ public class Maintain {
 						throwable -> e.onError(throwable)
 					);
 				e.setCancellable(() -> {
-					Log.d("test", "disposing");
 					disposable.dispose();
 				});
 			}
