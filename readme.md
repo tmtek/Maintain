@@ -4,10 +4,10 @@
 
 Maintain is a class that builds upon rx Single instances with the `.latest()` operator designed to store and update emitted data based on defined conditions.
 
-```
+```java
 final Single<EmissionType> myMaintainedSingle = 
 	updateDataSingle //<- A single that retrieves/updates data. 
-	.compose(Matintain.latest(Maintain.Update.expired(10, TimeUnit.MINUTES)));
+	.compose(Maintain.latest(Maintain.Update.expired(10, TimeUnit.MINUTES)));
 	
 ```
 
@@ -15,7 +15,7 @@ final Single<EmissionType> myMaintainedSingle =
 
 Consider the following stream:
 
-```
+```java
 //mCounter = 0 on init.
 
 final Single<Long> exampleStream = Single.defer(() ->
@@ -27,7 +27,7 @@ final Single<Long> exampleStream = Single.defer(() ->
 
 Every time I subscribe to that Single, the work would be performed, and the value would be emitted to me:
 
-```
+```java
 exampleStream.subscribe(value -> {
 	//value would be 0
 })
@@ -52,7 +52,7 @@ Single.timer(4)
 
 But by adding `Maintain.latest()` something differ occurs:
 
-```
+```java
 //mCounter = 0 on init.
 
 final Single<Long> exampleStream = Single.defer(() ->
@@ -64,7 +64,7 @@ final Single<Long> exampleStream = Single.defer(() ->
 ``` 
 The work is only performed once, and all receive a value of 0:
 
-```
+```java
 exampleStream.subscribe(value -> {
 	//value would be 0
 })
@@ -102,7 +102,7 @@ That argument is what we refer to as the "update function". It is checked every 
 
 If we used a different update function such as: `Maintain.Update.always()`, then our example behaves differently:
 
-```
+```java
 exampleStream.subscribe(value -> {
 	//value would be 0
 })
@@ -171,7 +171,7 @@ The maintained stream will be allowed to update if the current state of the supp
 
 Toggles give you the ability to mark your maintained stream for update which will take place on the next subscription.
 
-```
+```java
 final Maintain.Toggle toggle = new Maintain.Toggle();
 
 //mCounter = 0 on init.
@@ -195,7 +195,7 @@ This update function allows you to specify many conditions that dictate whether 
 
 `updateFuncs` You may supply any number of other update functions (even other instances of Maintain.Update.conditions()) to be part of this group of conditions.
 
-```
+```java
 
 final Maintain.Toggle toggle = new Maintain.Toggle();
 
@@ -224,7 +224,7 @@ If you need to subscribe to a maintained stream to capture each update as an emi
 
 The second optional argument to the method is a BehaviourSubject that will be updated with all of the values the upstream emits. If you don't supply a BehaviorSubject, Maintain.latest creates one internally.
 
-```
+```java
 //mCounter = 0 on init.
 
 final BehaviorSubject<Integer> allUpdatesStream = BehaviorSubject.create();
